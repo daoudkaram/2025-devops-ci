@@ -101,7 +101,7 @@ jobs:
         run: pnpm install --frozen-lockfile
         
       - name: Prevent formatting CI workflows
-        run: pnpm install --frozen-lockfile
+        run: echo ".github/workflows/" >> .prettierignore
 
       - name: Run Prettier auto-fix
         run: pnpm prettier --write .

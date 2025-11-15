@@ -29,6 +29,7 @@ jobs:
       - name: Run unit tests
         run: pnpm vitest --run --exclude e2e/**
 
+
   # 2. E2E Tests
   e2e-tests:
     runs-on: ubuntu-latest
@@ -54,6 +55,7 @@ jobs:
       - name: Run E2E tests
         run: pnpm test:e2e
 
+
   # 3. Format Check
   format-check:
     runs-on: ubuntu-latest
@@ -75,80 +77,8 @@ jobs:
       - name: Prettier format check
         run: pnpm format:check
 
-  # 4. Linter
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Enable pnpm
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: ESLint check
-        run: pnpm lint
-
-  # 5. Documentation Build Check
-  docs-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Enable pnpm
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Storybook documentation
-        run: pnpm build-storybook
-
-  # 6. Docker Build Check
-  docker-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t app .
-
-  # 7. App Build Check
-  app-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Enable pnpm
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build application
-        run: pnpm build
-
-# auto format fix
+  # AUTO FORMAT FIX (Advanced Part 3)
   auto-format-fix:
     runs-on: ubuntu-latest
     needs: format-check
@@ -180,6 +110,107 @@ jobs:
           git add .
           git commit -m "chore: auto-format code via CI" || echo "No changes to commit"
 
-      - name: Push changes back to PR branch
-        run: git push
+      - name: Push changes
+        run: git push --force-with-lease
+
+
+  # Re-check after auto-format fix
+  verify-format-fix:
+    runs-on: ubuntu-latest
+    needs: auto-format-fix
+    if: success() || failure()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify formatting after auto-fix
+        run: pnpm format:check
+
+
+  # 4. Linter
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+
+  # 5. Documentation Build Check
+  docs-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+
+  # 6. Docker Build Check
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t app .
+
+
+  # 7. App Build Check
+  app-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
 

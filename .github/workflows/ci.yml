@@ -113,6 +113,9 @@ jobs:
       - name: Run Prettier auto-fix
         run: pnpm prettier --write .
 
+      - name: Fix readme manually if Prettier skipped it
+        run: pnpm prettier --write README.md
+
       - name: Commit auto-format changes
         run: |
           git config --global user.name "github-actions[bot]"

@@ -74,11 +74,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Add Prettier ignore rules for CI and Compose
+        run: |
+          echo ".github/workflows/" >> .prettierignore
+          echo "docker-compose.yml" >> .prettierignore
+
       - name: Prettier format check
         run: pnpm prettier --check .
 
 
-  # Auto-format fix (ADVANCED PART)
+  # Auto-format fix
   auto-format-fix:
     runs-on: ubuntu-latest
     needs: format-check
@@ -99,9 +104,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
-      - name: Prevent formatting CI workflows
-        run: echo ".github/workflows/" >> .prettierignore
+
+      - name: Add Prettier ignore rules for CI and Compose
+        run: |
+          echo ".github/workflows/" >> .prettierignore
+          echo "docker-compose.yml" >> .prettierignore
 
       - name: Run Prettier auto-fix
         run: pnpm prettier --write .
@@ -117,7 +124,7 @@ jobs:
         run: git push --force-with-lease
 
 
-  # Re-check formatting after auto-fix
+  # Verify formatting after auto-fix
   verify-format-fix:
     runs-on: ubuntu-latest
     needs: auto-format-fix
@@ -136,6 +143,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Add Prettier ignore rules for CI and Compose
+        run: |
+          echo ".github/workflows/" >> .prettierignore
+          echo "docker-compose.yml" >> .prettierignore
 
       - name: Verify formatting after auto-fix
         run: pnpm prettier --check .

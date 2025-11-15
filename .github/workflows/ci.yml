@@ -111,7 +111,8 @@ jobs:
           echo "docker-compose.yml" >> .prettierignore
 
       - name: Run Prettier auto-fix
-        run: pnpm prettier --write .
+        run: git ls-files -z | xargs -0 pnpm prettier --write
+
 
       - name: Commit auto-format changes
         run: |
@@ -150,7 +151,7 @@ jobs:
           echo "docker-compose.yml" >> .prettierignore
 
       - name: Verify formatting after auto-fix
-        run: pnpm prettier --check .
+        run: git ls-files -z | xargs -0 pnpm prettier --check
 
 
   # 4. Linter

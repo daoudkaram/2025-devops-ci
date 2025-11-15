@@ -1,3 +1,78 @@
+ DevOps CI/CD Lab – Project Setup
+
+This repository includes the complete DevOps implementation required for the CI lab:
+
+Multi-stage Docker build (production-ready, non-root user)
+
+Docker Compose environment with PostgreSQL and health checks
+
+Full GitHub Actions CI pipeline with all 7 required checks
+
+Automatic Prettier format fixing (bonus requirement)
+
+Unit tests and E2E tests integrated into CI
+
+ Running the Application with Docker
+Build the production image:
+docker build -t todo-app .
+
+Run the container:
+docker run --rm \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgres://postgres:postgres@host.docker.internal:5432/todos" \
+  todo-app
+
+ Running with Docker Compose
+
+This starts both the application and PostgreSQL database with health checks:
+
+docker compose up --build
+
+
+To stop everything:
+
+docker compose down
+
+ Running Tests
+Unit tests
+pnpm test
+
+End-to-End tests (Playwright)
+pnpm test:e2e
+
+ CI Pipeline Overview
+
+The workflow in .github/workflows/ci.yml includes:
+
+ Unit tests
+
+ E2E tests
+
+ Prettier format check
+
+ ESLint linter
+
+ Storybook documentation build
+
+ Docker image build
+
+ Application build (Vite)
+
+ Automatic format fix (bonus)
+
+The CI runs on every push and pull request to ensure code quality and build integrity.
+
+ Required Deliverables
+File	Description
+Dockerfile	Multi-stage container build
+docker-compose.yml	App + DB services with health checks
+.github/workflows/ci.yml	Complete CI pipeline
+README.md	Setup + usage instructions
+
+
+(existing README content starts below)
+
+
 Welcome to your new TanStack app!
 
 # Getting Started

@@ -75,10 +75,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Prettier format check
-        run: pnpm format:check
+        run: pnpm prettier --check .
 
 
-  # AUTO FORMAT FIX (Advanced Part 3)
+  # Auto-format fix (ADVANCED PART)
   auto-format-fix:
     runs-on: ubuntu-latest
     needs: format-check
@@ -101,7 +101,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Prettier auto-fix
-        run: pnpm format
+        run: pnpm prettier --write .
 
       - name: Commit auto-format changes
         run: |
@@ -114,7 +114,7 @@ jobs:
         run: git push --force-with-lease
 
 
-  # Re-check after auto-format fix
+  # Re-check formatting after auto-fix
   verify-format-fix:
     runs-on: ubuntu-latest
     needs: auto-format-fix
@@ -135,7 +135,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Verify formatting after auto-fix
-        run: pnpm format:check
+        run: pnpm prettier --check .
 
 
   # 4. Linter

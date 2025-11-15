@@ -148,3 +148,38 @@ jobs:
       - name: Build application
         run: pnpm build
 
+# auto format fix
+  auto-format-fix:
+    runs-on: ubuntu-latest
+    needs: format-check
+    if: failure() && github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Prettier auto-fix
+        run: pnpm format
+
+      - name: Commit auto-format changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: auto-format code via CI" || echo "No changes to commit"
+
+      - name: Push changes back to PR branch
+        run: git push
+
